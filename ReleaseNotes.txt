@@ -1,0 +1,20 @@
+*****************************************************************************************************
+CeleX-5 ZYNQ SDK Version 1.0 
+Realeased Date: 2019-01-25
+
+New Features:
+1) Added support for CeleX-5 Sensor on ZYNQ platform.
+
+Bug Fixed:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+SDK Development Environment:
+ 
+ARM 
+   + arm-linux-gnueabihf-g++
+   + C++
+   + OpenCV 3.3.0
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
