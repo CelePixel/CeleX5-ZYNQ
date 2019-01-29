@@ -24,16 +24,19 @@ OpenCV-based interfaces to obtain data from the sensor.
 
 * This SDK provides three working modes of CeleX5 Sensor: Full-frame Picture data, Event data, and Full-frame Optical-Flow data. CeleX5 also provides Loop Mode data which alternately renders Full-frame Picture data, Event data, and Full-frame Optical-Flow data.
 
-`The CeleX5-SDK is structured as follows:`
+`The CeleX5_Zynq is structured as follows:`
 
-* _DemoGUI_: CeleX5 Demo GUI execution (Windows and Linux).
+* _Demo_: 
+  * _CeleX5Demo_Client_: Demo GUI on Windows platform.
+  * _CeleX5Demo_Server_: Demo server on Zynq platform.
 * _Documentation_:
   * _CeleX5_SDK_Reference_: The introduction of CeleX5 sensor and the references of all the classes and functions in the SDK.
-  * _CeleX5_SDK_Getting_Started_Guide_: The instructions to use the CeleX5 sensor demo kit, install CX3 USB3.0 driver, run the CeleXDemo GUI and compile the source code.
-* _Drivers_: CX3 USB3.0 driver (Windows / Linux).
+  * _CeleX5_Zynq_SDK_Getting_Started_Guide_: The instructions to use the CeleX5 Zynq demo kit and compile the source code.
+* _SD_Card_: 
+  * _boot_: System files required to boot the CeleX5 Zynq board.
+  * _root_: Demo executable as well as its libraries and configuration files.
 * _Sources_:
-  * _CeleX_: Source code of CeleX5 library.
-  * _CeleXDemo_: Source code (developed by Qt) of CeleX5 demo.
-  * _CeleDriver_: Source code of CX3 USB3.0 driver.
-* _Samples_: Several examples developed based on SDK and a sample user manual file.
+  * _CeleX_: Source code of CeleX5 SDK.
+  * _CeleX5Demo_Client_: Source code (developed by Qt) of CeleX5 Demo Client.
+  * _CeleX5Demo_Server_: Source code of CeleX5 Demo Server.
 * _ReleaseNotes.txt_: New features, fixed bugs and SDK development environment.
