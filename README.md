@@ -1,5 +1,5 @@
-# CeleX5-SDK
-SDK for CeleX5 sensor.
+# CeleX5_Zynq
+SDK for CeleX5 sensor on Zynq platform.
 
 ![Structure](https://github.com/CelePixel/CeleX-SDK/raw/master/Sources/CeleXDemo/images/SDK_Structure.png)
 
