@@ -1,4 +1,4 @@
-# CeleX5_Zynq
+# CeleX5-Zynq
 SDK for CeleX5 sensor on Zynq platform.
 
 ![Structure](https://github.com/CelePixel/CeleX5_Zynq/blob/master/Source/CeleX5Demo_Client/images/CeleX5-Zynq_Structure.png)
@@ -24,7 +24,7 @@ OpenCV-based interfaces to obtain data from the sensor.
 
 * This SDK provides three working modes of CeleX5 Sensor: Full-frame Picture data, Event data, and Full-frame Optical-Flow data. CeleX5 also provides Loop Mode data which alternately renders Full-frame Picture data, Event data, and Full-frame Optical-Flow data.
 
-`The CeleX5_Zynq is structured as follows:`
+`The CeleX5-Zynq is structured as follows:`
 
 * _Demo_: 
   * _CeleX5Demo_Client_: Demo GUI on Windows platform.
