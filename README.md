@@ -1,7 +1,7 @@
 # CeleX5-Zynq
 SDK for CeleX5 sensor on Zynq platform.
 
-![Structure](https://github.com/CelePixel/CeleX5_Zynq/blob/master/Source/CeleX5Demo_Client/images/CeleX5-Zynq_Structure.png)
+![Structure](https://github.com/CelePixel/CeleX5-Zynq/blob/CeleX5_Z_V1.0/Source/CeleX5Demo_Client/images/CeleX5-Zynq_Structure.png)
 
 * CeleX<sup>TM</sup> is a family of smart image sensor, specially designed for machine vision. Each pixel in CeleX<sup>TM</sup>
 sensor can individually monitor the relative change in light intensity and report an event if a threshold is
