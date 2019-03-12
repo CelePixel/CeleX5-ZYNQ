@@ -30,10 +30,12 @@ OpenCV-based interfaces to obtain data from the sensor.
 * _Documentation_:
   * _CeleX5_SDK_Reference_: The introduction of CeleX5 sensor and the references of all the classes and functions in the SDK.
   * _CeleX5_SDK_Getting_Started_Guide_: The instructions to use the CeleX5 sensor demo kit, install CX3 USB3.0 driver, run the CeleXDemo GUI and compile the source code.
-* _Drivers_: CX3 USB3.0 driver (Windows / Linux).
+* _SD_Card_: 
+  * _boot_: System files required to boot the CeleX5 ZYNQ board.
+  * _root_: Demo executable program and start.sh file.
 * _Sources_:
-  * _CeleX_: Source code of CeleX5 library.
-  * _CeleXDemo_: Source code (developed by Qt) of CeleX5 demo.
-  * _CeleDriver_: Source code of CX3 USB3.0 driver.
+  * _CeleX_: Source code of CeleX5 SDK.
+  * _CeleX5Demo_Client_: Source code (developed with Qt) of Demo Client.
+  * _CeleX5Demo_Server_: Source code of Demo Server.
 * _Samples_: Several examples developed based on SDK and a sample user manual file.
 * _ReleaseNotes.txt_: New features, fixed bugs and SDK development environment.
