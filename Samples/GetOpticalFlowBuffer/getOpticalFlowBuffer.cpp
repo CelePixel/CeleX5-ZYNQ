@@ -19,7 +19,7 @@
 
 int main()
 {
-	std::string ipAddress = "192.168.1.13";
+	std::string ipAddress = "192.168.1.11";
 	int ipPort = 1234;
 	CeleX5 *pCeleX = new CeleX5;
 	if (NULL == pCeleX)

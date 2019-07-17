@@ -79,7 +79,7 @@ void SensorDataObserver::onFrameDataUpdated(CeleX5ProcessedData* pSensorData)
 
 int main()
 {
-	std::string ipAddress = "192.168.1.13";
+	std::string ipAddress = "192.168.1.11";
 	int ipPort = 1234;
 	if (NULL == pCeleX5)
 		return 0;

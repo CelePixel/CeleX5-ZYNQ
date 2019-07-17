@@ -34,6 +34,7 @@ CeleX5DataReader::CeleX5DataReader()
 	, m_uiLastTFromFPGA(0)
 	, m_uiEventType(0)
 	, m_uiSensorMode(0)
+	, m_uiClockRate(40)
 {
 }
 
@@ -280,10 +281,10 @@ bool CeleX5DataReader::isIMUSpecialEventEnd(unsigned char data[EVENT_SIZE])
 	return result;
 }
 
-IMUData CeleX5DataReader::parseIMUData(unsigned char data[EVENT_SIZE], uint64_t frameNo)
+IMUData CeleX5DataReader::parseIMUData(unsigned char data[EVENT_SIZE], uint64_t frameNo, uint32_t tCounter)
 {
 	imuRawData.frameNo = frameNo + 1;
-
+	imuRawData.time_stamp = (128 * tCounter)/(1000* m_uiClockRate);
 	//cout << "-----------parse IMU Data--------------" << int((data[3] & 0xC0) >> 6) << endl;
 	//cout << hex << int(data[0]) << ", " << int(data[1]) << ", " << int(data[2]) << ", " << int(data[3]) << endl;
 	//  GYROS_byte0 = {1'b1,  x_gyros[6 : 0] };

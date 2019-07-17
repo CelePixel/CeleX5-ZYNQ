@@ -193,17 +193,21 @@ bool CeleX5DataProcessor::processEvent(unsigned char* data)
 	if (m_pFPGADataReader->isIMUSpecialEventEnd(data))
 	{
 		m_bIsIMUSpecialStart = false;
-		//cout << "gyrosx:" << imuData.x_GYROS << ", gyrosy:" << imuData.y_GYROS << ", gyrosz:" << imuData.z_GYROS <<
-		//	", accx:" << imuData.x_ACC << ", accy:" << imuData.y_ACC << ", accz:" << imuData.z_ACC <<
-		//	", magx:" << imuData.x_MAG << ", magx:" << imuData.x_MAG << ", magz:" << imuData.z_MAG <<
-		//	", temp:" << imuData.x_TEMP << endl;
+
+		imuData.y_ACC = -imuData.y_ACC;
+		imuData.z_ACC = -imuData.z_ACC;
+
+		double x_MAG = imuData.x_MAG;
+		imuData.x_MAG = imuData.y_MAG;
+		imuData.y_MAG = -x_MAG;	
 		m_vecIMUData.push_back(imuData);
+
 		return true;
 	}
 
 	if (m_bIsIMUSpecialStart)
 	{
-		imuData = m_pFPGADataReader->parseIMUData(data, m_uiEventFrameNo);
+		imuData = m_pFPGADataReader->parseIMUData(data, m_uiEventFrameNo, m_uiEventTCounter);
 		return true;
 	}
 
@@ -837,6 +841,7 @@ void CeleX5DataProcessor::setRotateType(int type)
 void CeleX5DataProcessor::setClockRate(int value)
 {
 	m_uiClockRate = value;
+	m_pFPGADataReader->setClockRate(m_uiClockRate);
 }
 
 uint32_t CeleX5DataProcessor::getFullFrameFPS()

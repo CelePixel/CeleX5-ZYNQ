@@ -40,7 +40,9 @@ public:
 	//check imu data
 	bool isIMUSpecialEvent(unsigned char data[EVENT_SIZE]);
 	bool isIMUSpecialEventEnd(unsigned char data[EVENT_SIZE]);
-	IMUData parseIMUData(unsigned char data[EVENT_SIZE],uint64_t timeStamp);
+	IMUData parseIMUData(unsigned char data[EVENT_SIZE],uint64_t frameNo, uint32_t tCounter);
+
+	void setClockRate(uint32_t clockRate) { m_uiClockRate = clockRate; }
 
 	inline unsigned int row() { return m_uiRow; }
 	inline unsigned int lastRow() { return m_uiLastRow; }
@@ -67,7 +69,7 @@ private:
 	unsigned int  m_uiEventType;
 	unsigned int  m_uiSensorMode;
 	unsigned char m_lastData[4];
-
+	uint32_t m_uiClockRate;
 	IMUData imuRawData;
 	int16_t m_iLowGYROS_Y = 0;
 	int16_t m_iLowACC_Y = 0;
