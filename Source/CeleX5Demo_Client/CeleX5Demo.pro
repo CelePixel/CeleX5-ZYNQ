@@ -88,8 +88,8 @@ linux-g++ {
 RESOURCES += \
     images.qrc
 
-win32: LIBS += -L$$PWD/ffmpeg/lib/Windows/ -lavcodec -lavformat -lavutil -lswresample -lswscale
-unix:!macx: LIBS += -L$$PWD/ffmpeg/lib/Linux/ -lavcodec -lavformat -lavutil -lswresample -lswscale
+win32: LIBS += -L$$PWD/ffmpeg/lib/Windows/ -lavcodec -lavformat -lavutil -lswresample
+unix:!macx: LIBS += -L$$PWD/ffmpeg/lib/Linux/ -lavcodec -lavformat -lavutil -lswresample
 
 INCLUDEPATH += $$PWD/ffmpeg/include
 DEPENDPATH += $$PWD/ffmpeg/include

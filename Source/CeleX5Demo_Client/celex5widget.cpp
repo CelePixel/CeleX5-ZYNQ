@@ -23,6 +23,7 @@ QTime runningTime;
 VideoStream*  m_pVideoStream = new VideoStream;
 QTimer*  m_pSaveImageTimer;
 QStringList filePathList;
+std::ofstream g_ofWriteMat;
 
 SensorDataObserver::SensorDataObserver(CX5SensorDataServer *sensorData, QWidget *parent)
     : QWidget(parent)
@@ -162,6 +163,11 @@ void SensorDataObserver::onFrameDataUpdated(CeleX5ProcessedData* pSensorData)
     }
     updateImage(pBuffer, mode, pSensorData->getLoopNum(), m_iPicMode);
 
+    if (m_emDisplayType == ConvertBin2CSV)
+    {
+        writeCSVData(pSensorData->getSensorMode());
+    }
+
 
     if (!m_bRealtimeDisplay)
     {
@@ -251,6 +257,36 @@ void SensorDataObserver::setVideoColorEnable(bool enable)
 void SensorDataObserver::setSwitch2NextFileState(bool state)
 {
     m_bCurrFileFinished = state;
+}
+
+void SensorDataObserver::writeCSVData(CeleX5::CeleX5Mode sensorMode)
+{
+    std::vector<EventData> vecEvent;
+    m_pCeleX5->getEventDataVector(vecEvent);
+    size_t dataSize = vecEvent.size();
+    if (sensorMode == CeleX5::Event_Address_Only_Mode)
+    {
+        for (int i = 0; i < dataSize; i++)
+        {
+            g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ',' << vecEvent[i].t << endl;
+        }
+    }
+    else if (sensorMode == CeleX5::Event_Intensity_Mode)
+    {
+        for (int i = 0; i < dataSize; i++)
+        {
+            g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ',' << vecEvent[i].brightness
+                         << ',' << vecEvent[i].polarity << ',' <<  vecEvent[i].t << endl;
+        }
+    }
+    else if (sensorMode == CeleX5::Event_Optical_Flow_Mode)
+    {
+        for (int i = 0; i < dataSize; i++)
+        {
+            g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ','
+                         << vecEvent[i].brightness << ',' << vecEvent[i].t << endl;
+        }
+    }
 }
 
 // convert single channel to three-channel
@@ -798,7 +834,7 @@ CeleX5Widget::CeleX5Widget(QWidget *parent)
     m_pFPSSlider->setDisplayName("Display FPS");
     m_pFPSSlider->setObjectName("Display FPS");
 
-    m_pFrameSlider = new CfgSlider(this, 1, 100, 1, 6, this);
+    m_pFrameSlider = new CfgSlider(this, 1, 100, 1, 30, this);
     m_pFrameSlider->setGeometry(1330, 250, 460, 70);
     m_pFrameSlider->setBiasType("Frame time");
     m_pFrameSlider->setDisplayName("Frame time");
@@ -931,6 +967,7 @@ void CeleX5Widget::createButtons(QHBoxLayout* layout)
     btnNameList.push_back("Rotate_LR");
     btnNameList.push_back("Rotate_UD");
     btnNameList.push_back("ConvertBin2Video");
+    btnNameList.push_back("ConvertBin2CSV");
     //btnNameList.push_back("Test: Save Pic");
     btnNameList.push_back("Connect");
     //btnNameList.push_back("Save Parameters");
@@ -1196,6 +1233,56 @@ void CeleX5Widget::playback(QPushButton *pButton)
         pButton->setText("Playback");
         setButtonNormal(pButton);
     }
+}
+
+void CeleX5Widget::convertBin2CSV(QPushButton *pButton)
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Open a bin file", QCoreApplication::applicationDirPath(), "Bin Files (*.bin)");
+    if (filePath.isEmpty())
+        return;
+
+    QString path = filePath.left(filePath.size() - 4);
+    path += ".csv";
+    g_ofWriteMat.open(path.toLocal8Bit().data());
+
+    showPlaybackBoard(false);
+    m_pSensorDataObserver->setPlaybackEnabled(true);
+    m_pSensorDataObserver->setDisplayType(ConvertBin2CSV);
+    m_pCeleX5->setIsPlayBack(true);
+
+    if (m_pCeleX5->openBinFile(filePath.toLocal8Bit().data()))
+    {
+        CeleX5::BinFileAttributes header = m_pCeleX5->getBinFileAttributes();
+        //QString qsHour = header.hour > 9 ? QString::number(header.hour) : "0" + QString::number(header.hour);
+        QString qsMinute = header.minute > 9 ? QString::number(header.minute) : "0" + QString::number(header.minute);
+        QString qsSecond = header.second > 9 ? QString::number(header.second) : "0" + QString::number(header.second);
+        m_pLabelEndTime->setText(/*qsHour + ":" + */qsMinute + ":" + qsSecond);
+        m_timeCurrent.setHMS(0, 0, 0);
+
+        if(!m_pCeleX5->isLoopModeEnabled())
+            m_pCbBoxFixedMode->setCurrentIndex((int)m_pCeleX5->getSensorFixedMode());
+
+        onReadBinTimer();
+        m_pUpdateTimer->start(30);
+    }
+
+
+
+//    else
+//    {
+//        showPlaybackBoard(false);
+//        m_pSensorDataObserver->setPlaybackEnabled(false);
+//        m_pSensorDataObserver->setDisplayType(Realtime);
+//        m_pCeleX5->setIsPlayBack(false);
+//        if(!m_pCeleX5->isLoopModeEnabled())
+//        {
+//            m_pCeleX5->setSensorFixedMode(CeleX5::Event_Address_Only_Mode);
+//            m_pCbBoxFixedMode->setCurrentIndex(0);
+//            m_pCbBoxImageType->setCurrentIndex(0);
+//        }
+//        pButton->setText("Playback");
+//        setButtonNormal(pButton);
+//    }
 }
 
 void CeleX5Widget::record(QPushButton* pButton)
@@ -1593,6 +1680,10 @@ void CeleX5Widget::onButtonClicked(QAbstractButton *button)
     {
         m_strButtonName = "ConvertBin2Video";
         showVideoCFG();
+    }
+    else if ("ConvertBin2CSV" == button->objectName())
+    {
+        convertBin2CSV((QPushButton*)button);
     }
     else if ("Connect" == button->objectName())
     {

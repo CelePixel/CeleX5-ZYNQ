@@ -49,6 +49,8 @@ public:
     bool getRecordVideoState(){return m_bRecordVideoEnabled;}
     void setSwitch2NextFileState(bool state);
     bool getSwitch2NextFileState(){return m_bCurrFileFinished;}
+    //
+    void writeCSVData(CeleX5::CeleX5Mode sensorMode);
 
 public slots:
 
@@ -120,6 +122,7 @@ private:
 
     void changeFPN();
     void playback(QPushButton* pButton);
+    void convertBin2CSV(QPushButton* pButton);
 
     void record(QPushButton* pButton);
     void recordVideo();
