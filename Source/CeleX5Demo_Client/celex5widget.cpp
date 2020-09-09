@@ -24,6 +24,7 @@ VideoStream*  m_pVideoStream = new VideoStream;
 QTimer*  m_pSaveImageTimer;
 QStringList filePathList;
 std::ofstream g_ofWriteMat;
+bool g_bDataAligned = false;
 
 SensorDataObserver::SensorDataObserver(CX5SensorDataServer *sensorData, QWidget *parent)
     : QWidget(parent)
@@ -168,7 +169,6 @@ void SensorDataObserver::onFrameDataUpdated(CeleX5ProcessedData* pSensorData)
         writeCSVData(pSensorData->getSensorMode());
     }
 
-
     if (!m_bRealtimeDisplay)
     {
         if (1000 / m_iPlaybackFPS > 1)
@@ -268,23 +268,47 @@ void SensorDataObserver::writeCSVData(CeleX5::CeleX5Mode sensorMode)
     {
         for (int i = 0; i < dataSize; i++)
         {
-            g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ',' << vecEvent[i].t << endl;
+            if (!g_bDataAligned)
+            {
+                if (vecEvent[i].row != 0)
+                    g_bDataAligned = true;
+            }
+            else
+            {
+                g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ',' << vecEvent[i].t << endl;
+            }
         }
     }
     else if (sensorMode == CeleX5::Event_Intensity_Mode)
     {
         for (int i = 0; i < dataSize; i++)
         {
-            g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ',' << vecEvent[i].brightness
-                         << ',' << vecEvent[i].polarity << ',' <<  vecEvent[i].t << endl;
+            if (!g_bDataAligned)
+            {
+                if (vecEvent[i].row != 0)
+                    g_bDataAligned = true;
+            }
+            else
+            {
+                g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ',' << vecEvent[i].brightness
+                             << ',' << vecEvent[i].polarity << ',' <<  vecEvent[i].t << endl;
+            }
         }
     }
     else if (sensorMode == CeleX5::Event_Optical_Flow_Mode)
     {
         for (int i = 0; i < dataSize; i++)
         {
-            g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ','
-                         << vecEvent[i].brightness << ',' << vecEvent[i].t << endl;
+            if (!g_bDataAligned)
+            {
+                if (vecEvent[i].row != 0)
+                    g_bDataAligned = true;
+            }
+            else
+            {
+                g_ofWriteMat << vecEvent[i].row << ',' << vecEvent[i].col << ','
+                             << vecEvent[i].brightness << ',' << vecEvent[i].t << endl;
+            }
         }
     }
 }
@@ -1241,6 +1265,8 @@ void CeleX5Widget::convertBin2CSV(QPushButton *pButton)
     if (filePath.isEmpty())
         return;
 
+    g_bDataAligned = false;
+
     QString path = filePath.left(filePath.size() - 4);
     path += ".csv";
     g_ofWriteMat.open(path.toLocal8Bit().data());
@@ -1248,6 +1274,10 @@ void CeleX5Widget::convertBin2CSV(QPushButton *pButton)
     showPlaybackBoard(false);
     m_pSensorDataObserver->setPlaybackEnabled(true);
     m_pSensorDataObserver->setDisplayType(ConvertBin2CSV);
+    pButton->setStyleSheet("QPushButton {background: #992F6F; color: yellow; "
+                           "border-style: outset; border-width: 2px; border-radius: 10px; border-color: #002F6F; "
+                           "font: 20px Calibri; }"
+                           "QPushButton:pressed {background: #992F6F; }");
     m_pCeleX5->setIsPlayBack(true);
 
     if (m_pCeleX5->openBinFile(filePath.toLocal8Bit().data()))
@@ -1265,24 +1295,6 @@ void CeleX5Widget::convertBin2CSV(QPushButton *pButton)
         onReadBinTimer();
         m_pUpdateTimer->start(30);
     }
-
-
-
-//    else
-//    {
-//        showPlaybackBoard(false);
-//        m_pSensorDataObserver->setPlaybackEnabled(false);
-//        m_pSensorDataObserver->setDisplayType(Realtime);
-//        m_pCeleX5->setIsPlayBack(false);
-//        if(!m_pCeleX5->isLoopModeEnabled())
-//        {
-//            m_pCeleX5->setSensorFixedMode(CeleX5::Event_Address_Only_Mode);
-//            m_pCbBoxFixedMode->setCurrentIndex(0);
-//            m_pCbBoxImageType->setCurrentIndex(0);
-//        }
-//        pButton->setText("Playback");
-//        setButtonNormal(pButton);
-//    }
 }
 
 void CeleX5Widget::record(QPushButton* pButton)
@@ -1804,9 +1816,9 @@ void CeleX5Widget::onUpdatePlayInfo()
     {
         m_pSensorDataObserver->setRecordVideoEnabled(false);
 
-        if(m_pSensorDataObserver->getSwitch2NextFileState())
+        if (m_pSensorDataObserver->getSwitch2NextFileState())
         {
-            cout << "------------- Convert "<<filePathList[0].toStdString()<<" Finished! -------------" << endl;
+            cout << "------------- Convert " << filePathList[0].toStdString() << " Finished! -------------" << endl;
 
             filePathList.removeAt(0);
             if(filePathList.size()>0)
@@ -1828,6 +1840,19 @@ void CeleX5Widget::onUpdatePlayInfo()
                 }
                 m_pUpdateTimer->stop();
             }
+        }
+        if (m_pSensorDataObserver->getDisplayType() == ConvertBin2CSV)
+        {
+            QList<QPushButton*> button=this->findChildren<QPushButton *>("ConvertBin2CSV");
+            button[0]->setStyleSheet("QPushButton {background: #002F6F; color: white; "
+                                     "border-style: outset; border-width: 2px; border-radius: 10px; border-color: #002F6F; "
+                                     "font: 20px Calibri; }"
+                                     "QPushButton:pressed {background: #992F6F;}");
+            QMessageBox::information(NULL, "convertBin2Video", "Convert Bin to Video completely!", QMessageBox::Yes, QMessageBox::Yes);
+            m_pSensorDataObserver->setDisplayType(Realtime);
+            m_pCeleX5->setIsPlayBack(false);
+            m_pUpdateTimer->stop();
+            g_ofWriteMat.close();
         }
     }
 }
