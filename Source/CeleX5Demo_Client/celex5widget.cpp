@@ -1852,6 +1852,7 @@ void CeleX5Widget::onUpdatePlayInfo()
             m_pSensorDataObserver->setDisplayType(Realtime);
             m_pCeleX5->setIsPlayBack(false);
             m_pUpdateTimer->stop();
+
             g_ofWriteMat.close();
         }
     }
